@@ -1,0 +1,48 @@
+import csv
+import re
+
+fieldnames = ['XRef', 'YRef','Date','Value']
+infile='cru-ts-2-10.1991-2000-cutdown.pre'
+outfile='rainfall.csv'
+
+with open (infile) as filepre:
+  filepreskip = filepre.readlines()[5:]
+  with open ((outfile),'w', newline='') as csvwrt:
+    headwriter = csv.DictWriter(csvwrt, fieldnames=fieldnames)
+    headwriter.writeheader()
+    rowwriter=csv.writer(csvwrt,dialect = 'excel')
+    xr=None
+    yr=None
+    zeroyr=1991
+    for line in filepreskip:
+      match_gridref=(re.search(r'Grid-ref=\s*(\d*), (\d*)',(line)))
+      match_datarow=(re.match(r'\d*\s*\d*\s*\d*\s*\d*\s*\d*\s*\d*\s*\d*\s*\d*\s*\d*\s*\d*\s*\d*\s*\d*\s*',(line)))
+      # Grid-ref=   1, 311
+       
+      # 3020 2820 3040 2880 1740 1360  980  990 1410 1770 2580 2630
+        
+
+         
+      if match_gridref:
+        print(match_gridref.group(1))
+        print(match_gridref.group(2))
+        xr=(match_gridref.group(1))
+        yr=(match_gridref.group(2))
+        year=zeroyr
+          
+      elif match_datarow:
+        data=(line.split())
+        month=1
+        print(data)     
+        
+        for row in data:
+          print(row)
+          date=str(month) + '/1/' + str(year)
+          csvrow=((xr),(yr),(date),(row))
+          rowwriter.writerow(csvrow)
+          month += 1
+        year += 1
+  
+  
+                  
+print('done')
